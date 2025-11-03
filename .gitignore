@@ -1,5 +1,4 @@
 # Ignore model and data files
-*.pkl
 *.sav
 *.joblib
 *.h5
