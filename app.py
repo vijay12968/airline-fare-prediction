@@ -1,19 +1,25 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle
 from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestRegressor
 
+# -------------------------------
+# Streamlit Page Configuration
+# -------------------------------
 st.set_page_config(
     page_title="Airline Fare Prediction",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
+# -------------------------------
+# Custom Styling (White Theme)
+# -------------------------------
 st.markdown("""
     <style>
     .block-container {
-        padding-top: 4rem !important;
+        padding-top: 3rem !important;
         padding-bottom: 3rem !important;
         display: flex;
         flex-direction: column;
@@ -27,19 +33,15 @@ st.markdown("""
         background-color: #ffffff !important;
         border-radius: 12px;
         padding: 40px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.08);
+        box-shadow: 0 0 15px rgba(0,0,0,0.05);
         width: 90%;
         max-width: 850px;
         margin: auto;
     }
-    h1 {
+    h1, h3 {
         color: #003366;
         text-align: center;
         font-weight: 700;
-    }
-    h3, h5 {
-        color: #333333;
-        text-align: center;
     }
     .stButton>button {
         display: block;
@@ -48,7 +50,7 @@ st.markdown("""
         color: white !important;
         border-radius: 8px !important;
         height: 50px !important;
-        width: 250px !important;
+        width: 240px !important;
         font-size: 16px !important;
         font-weight: 500 !important;
         border: none !important;
@@ -66,41 +68,50 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-
+# -------------------------------
+# Page Title
+# -------------------------------
 st.title("Airline Fare Prediction")
 st.markdown("### Predict your flight fare using Machine Learning")
 
-
+# -------------------------------
+# Load Data and Train Model
+# -------------------------------
 @st.cache_data
-def load_data_and_models():
+def load_data_and_train_model():
     df = pd.read_csv("airlines_flights_data_small.csv")
     df.drop(columns=['index', 'flight'], inplace=True)
 
     cat_cols = ['airline', 'source_city', 'departure_time', 'stops',
                 'arrival_time', 'destination_city', 'class']
+
     le_dict = {}
     for col in cat_cols:
         le = LabelEncoder()
         df[col] = le.fit_transform(df[col])
         le_dict[col] = le
 
-    with open("random_forest_model.pkl", "rb") as f:
-        rf = pickle.load(f)
+    X = df.drop('price', axis=1)
+    y = df['price']
 
+    # Train a lightweight Random Forest model
+    rf = RandomForestRegressor(n_estimators=80, max_depth=10, random_state=42, n_jobs=-1)
+    rf.fit(X, y)
     return le_dict, rf
 
 try:
-    le_dict, rf = load_data_and_models()
-except Exception:
-    st.error(" Error loading data or model. Please check file paths.")
+    le_dict, rf = load_data_and_train_model()
+except Exception as e:
+    st.error("⚠️ Error loading data or training model. Please ensure CSV file is in the same folder.")
     st.stop()
 
-
+# -------------------------------
+# User Input Section
+# -------------------------------
 st.markdown("## Enter Flight Details")
 
 col1, col2 = st.columns(2)
 
-# Clean airline names 
 clean_airlines = [a.replace("_", " ") for a in le_dict['airline'].classes_]
 
 with col1:
@@ -116,19 +127,22 @@ with col2:
     duration = st.slider("Duration (in hours)", 0.5, 30.0, 5.0, 0.5)
     days_left = st.number_input("Days Left before Departure", 1, 60, 15)
 
+# -------------------------------
+# Validation Function
+# -------------------------------
 def validate_inputs():
     if (airline == "Select" or source == "Select" or destination == "Select" or
         travel_class == "Select" or departure == "Select" or arrival == "Select"):
-        st.warning(" Please select all flight details before predicting.")
+        st.warning("⚠️ Please select all flight details before predicting.")
         return False
-
     if source == destination:
-        st.error(" Departure and Arrival cities are the same — please change one.")
+        st.error("❌ Departure and Arrival cities are the same — please change one.")
         return False
-
     return True
 
-
+# -------------------------------
+# Prediction Button
+# -------------------------------
 if st.button("Search Fare"):
     if validate_inputs():
         try:
@@ -138,7 +152,6 @@ if st.button("Search Fare"):
                 "2 or More Stops": "two_or_more"
             }
 
-            # Convert airline back to encoded form (after removing underscores)
             airline_encoded = le_dict['airline'].transform([airline.replace(" ", "_")])[0]
 
             input_data = {
@@ -161,11 +174,14 @@ if st.button("Search Fare"):
                 f"<h3 style='text-align:center; color:#004c99;'>Estimated Fare: ₹{predicted_price:,.2f}</h3>",
                 unsafe_allow_html=True
             )
-            st.caption("*(Prediction based on airline, route, class, and timing.)*")
+            st.caption("*(Prediction based on airline, route, class, and travel time.)*")
 
         except Exception:
-            st.error(" Something went wrong during prediction. Please recheck your inputs.")
+            st.error("⚠️ Something went wrong during prediction. Please recheck your inputs.")
 
+# -------------------------------
+# Footer
+# -------------------------------
 st.markdown("""
 <div class="footer">
 Developed collaboratively by <b>Veeraj Thota</b> & <b>Sai Teja</b><br>
