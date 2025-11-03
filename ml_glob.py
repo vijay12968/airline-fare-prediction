@@ -13,7 +13,7 @@ import pickle
 # -----------------------------------------
 # Load Dataset
 # -----------------------------------------
-df = pd.read_csv(r"C:\Users\saite\practice on web\mlglob55\airlines_flights_data.csv")
+df = pd.read_csv("airlines_flights_data_small.csv")
 df.drop(columns=['index', 'flight'], inplace=True)
 
 # Encode Categorical Columns
