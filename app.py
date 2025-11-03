@@ -73,7 +73,7 @@ st.markdown("### Predict your flight fare using Machine Learning")
 
 @st.cache_data
 def load_data_and_models():
-    df = pd.read_csv(r"C:\Users\saite\practice on web\mlglob55\airlines_flights_data.csv")
+    df = pd.read_csv("airlines_flights_data_small.csv")
     df.drop(columns=['index', 'flight'], inplace=True)
 
     cat_cols = ['airline', 'source_city', 'departure_time', 'stops',
@@ -128,9 +128,7 @@ def validate_inputs():
 
     return True
 
-# -------------------------------
-# PREDICTION SECTION
-# -------------------------------
+
 if st.button("Search Fare"):
     if validate_inputs():
         try:
