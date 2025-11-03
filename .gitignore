@@ -1,0 +1,15 @@
+# Ignore model and data files
+*.pkl
+*.sav
+*.joblib
+*.h5
+*.csv
+
+# Streamlit and Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.streamlit/
+.cache/
+.env
