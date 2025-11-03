@@ -1,26 +1,15 @@
-# --------------------------------------------------
-# Airline Fare Prediction App
-# Developed by Veeraj Thota & Sai Teja
-# --------------------------------------------------
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 import pickle
 from sklearn.preprocessing import LabelEncoder
 
-# -------------------------------
-# PAGE CONFIG
-# -------------------------------
 st.set_page_config(
     page_title="Airline Fare Prediction",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# -------------------------------
-# LIGHT THEME & LAYOUT STYLING
-# -------------------------------
 st.markdown("""
     <style>
     .block-container {
@@ -77,15 +66,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# -------------------------------
-# TITLE
-# -------------------------------
+
 st.title("Airline Fare Prediction")
 st.markdown("### Predict your flight fare using Machine Learning")
 
-# -------------------------------
-# LOAD MODEL & ENCODERS
-# -------------------------------
+
 @st.cache_data
 def load_data_and_models():
     df = pd.read_csv(r"C:\Users\saite\practice on web\mlglob55\airlines_flights_data.csv")
@@ -107,17 +92,15 @@ def load_data_and_models():
 try:
     le_dict, rf = load_data_and_models()
 except Exception:
-    st.error("❌ Error loading data or model. Please check file paths.")
+    st.error(" Error loading data or model. Please check file paths.")
     st.stop()
 
-# -------------------------------
-# INPUT SECTION
-# -------------------------------
+
 st.markdown("## Enter Flight Details")
 
 col1, col2 = st.columns(2)
 
-# Clean airline names (remove underscores)
+# Clean airline names 
 clean_airlines = [a.replace("_", " ") for a in le_dict['airline'].classes_]
 
 with col1:
@@ -133,17 +116,14 @@ with col2:
     duration = st.slider("Duration (in hours)", 0.5, 30.0, 5.0, 0.5)
     days_left = st.number_input("Days Left before Departure", 1, 60, 15)
 
-# -------------------------------
-# VALIDATION
-# -------------------------------
 def validate_inputs():
     if (airline == "Select" or source == "Select" or destination == "Select" or
         travel_class == "Select" or departure == "Select" or arrival == "Select"):
-        st.warning("⚠️ Please select all flight details before predicting.")
+        st.warning(" Please select all flight details before predicting.")
         return False
 
     if source == destination:
-        st.error("⚠️ Departure and Arrival cities are the same — please change one.")
+        st.error(" Departure and Arrival cities are the same — please change one.")
         return False
 
     return True
@@ -186,11 +166,8 @@ if st.button("Search Fare"):
             st.caption("*(Prediction based on airline, route, class, and timing.)*")
 
         except Exception:
-            st.error("⚠️ Something went wrong during prediction. Please recheck your inputs.")
+            st.error(" Something went wrong during prediction. Please recheck your inputs.")
 
-# -------------------------------
-# FOOTER
-# -------------------------------
 st.markdown("""
 <div class="footer">
 Developed collaboratively by <b>Veeraj Thota</b> & <b>Sai Teja</b><br>
