@@ -79,7 +79,7 @@ st.markdown("### Predict your flight fare using Machine Learning")
 # -------------------------------
 @st.cache_data
 def load_data_and_train_model():
-    df = pd.read_csv("airlines_flights_data_small.csv")
+    df = pd.read_csv("airlines_flights_data.csv")
     df.drop(columns=['index', 'flight'], inplace=True)
 
     cat_cols = ['airline', 'source_city', 'departure_time', 'stops',
