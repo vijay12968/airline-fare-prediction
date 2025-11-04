@@ -4,18 +4,12 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestRegressor
 
-# -------------------------------
-# Streamlit Page Configuration
-# -------------------------------
 st.set_page_config(
     page_title="Airline Fare Prediction",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# -------------------------------
-# Custom Styling (White Theme)
-# -------------------------------
 st.markdown("""
     <style>
     .block-container {
@@ -68,15 +62,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# -------------------------------
-# Page Title
-# -------------------------------
 st.title("Airline Fare Prediction")
 st.markdown("### Predict your flight fare using Machine Learning")
 
-# -------------------------------
-# Load Data and Train Model
-# -------------------------------
 @st.cache_data
 def load_data_and_train_model():
     df = pd.read_csv("airlines_flights_data.csv")
@@ -102,12 +90,9 @@ def load_data_and_train_model():
 try:
     le_dict, rf = load_data_and_train_model()
 except Exception as e:
-    st.error("⚠️ Error loading data or training model. Please ensure CSV file is in the same folder.")
+    st.error(" Error loading data or training model. Please ensure CSV file is in the same folder.")
     st.stop()
 
-# -------------------------------
-# User Input Section
-# -------------------------------
 st.markdown("## Enter Flight Details")
 
 col1, col2 = st.columns(2)
@@ -127,22 +112,16 @@ with col2:
     duration = st.slider("Duration (in hours)", 0.5, 30.0, 5.0, 0.5)
     days_left = st.number_input("Days Left before Departure", 1, 60, 15)
 
-# -------------------------------
-# Validation Function
-# -------------------------------
 def validate_inputs():
     if (airline == "Select" or source == "Select" or destination == "Select" or
         travel_class == "Select" or departure == "Select" or arrival == "Select"):
-        st.warning("⚠️ Please select all flight details before predicting.")
+        st.warning(" Please select all flight details before predicting.")
         return False
     if source == destination:
-        st.error("❌ Departure and Arrival cities are the same — please change one.")
+        st.error(" Departure and Arrival cities are the same — please change one.")
         return False
     return True
 
-# -------------------------------
-# Prediction Button
-# -------------------------------
 if st.button("Search Fare"):
     if validate_inputs():
         try:
@@ -177,11 +156,8 @@ if st.button("Search Fare"):
             st.caption("*(Prediction based on airline, route, class, and travel time.)*")
 
         except Exception:
-            st.error("⚠️ Something went wrong during prediction. Please recheck your inputs.")
+            st.error(" Something went wrong during prediction. Please recheck your inputs.")
 
-# -------------------------------
-# Footer
-# -------------------------------
 st.markdown("""
 <div class="footer">
 Developed collaboratively by <b>Veeraj Thota</b> & <b>Sai Teja</b><br>
